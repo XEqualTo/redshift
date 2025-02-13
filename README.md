@@ -108,5 +108,88 @@ SORTKEY(order_date);
 
 ---
 
-Would you like to move on to **query optimization techniques** next? 🚀
+## **Query Optimization Techniques**
+
+### 🔹 **1. Analyze Query Execution Plan**
+Use `EXPLAIN` to check how Redshift executes a query:
+
+```sql
+EXPLAIN SELECT customer_id, SUM(amount) 
+FROM orders 
+GROUP BY customer_id;
+```
+✅ Look for **nested loops, scan types, and data movement**.
+
+---
+
+### 🔹 **2. Optimize Joins with Distribution Keys**
+If two tables are frequently joined, use the **same DISTKEY** to avoid data shuffling:
+
+```sql
+CREATE TABLE customers (
+    customer_id INT DISTKEY,
+    name VARCHAR(100)
+);
+
+CREATE TABLE orders (
+    order_id INT,
+    customer_id INT DISTKEY,
+    order_date DATE,
+    amount DECIMAL(10,2)
+);
+```
+✅ Ensures **co-located joins** for better performance.
+
+---
+
+### 🔹 **3. Use Sort Keys for Faster Querying**
+Sort keys **pre-sort data** to allow efficient range filtering:
+
+```sql
+CREATE TABLE orders (
+    order_id INT,
+    customer_id INT,
+    order_date DATE SORTKEY,
+    amount DECIMAL(10,2)
+);
+```
+✅ Queries filtering `order_date` will be much faster.
+
+---
+
+### 🔹 **4. Avoid SELECT ***
+Instead of querying all columns, select only necessary ones:
+
+```sql
+SELECT customer_id, SUM(amount)
+FROM orders
+GROUP BY customer_id;
+```
+✅ Reduces **data transfer and memory usage**.
+
+---
+
+### 🔹 **5. Use Materialized Views for Expensive Queries**
+If a query runs frequently, store results in a **materialized view**:
+
+```sql
+CREATE MATERIALIZED VIEW order_summary AS
+SELECT customer_id, SUM(amount) AS total_spent
+FROM orders
+GROUP BY customer_id;
+```
+✅ Speeds up **repetitive queries**.
+
+---
+
+### 🔹 **6. Optimize Vacuum & Analyze**
+Run **VACUUM** and **ANALYZE** regularly to keep statistics up-to-date:
+
+```sql
+VACUUM orders;
+ANALYZE orders;
+```
+✅ Helps **query optimizer make better decisions**.
+
+---
 

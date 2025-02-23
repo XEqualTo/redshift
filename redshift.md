@@ -188,5 +188,3 @@ This system transforms Redshift administration from reactive to proactive:
 - **Optimize Costs**: Right-size clusters based on data.
 - **Simplify Audits**: Historical CSV files provide a compliance trail.
 ```
-
-Save this as `README.md` and adapt the SQL queries/credentials for your environment.

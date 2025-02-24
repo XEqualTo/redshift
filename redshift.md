@@ -1,6 +1,3 @@
-Here’s the detailed explanation in Markdown format:
-
-```markdown
 # Amazon Redshift Health Monitoring System
 
 A modular system to automate cluster health checks, detect issues, and provide actionable recommendations.
@@ -29,14 +26,14 @@ Defines **what to monitor** and **how to respond**. Contains:
 }
 ```
 
-### 2. Python Script (`healthcheck.py`)
+### 2. Python Script (`extract.py`)
 Executes checks and exports results:
 - Connects to Redshift using user-provided credentials.
 - Runs SQL queries from `config.json`.
 - Saves results to timestamped CSV files.
 
 ### 3. Output Directory
-- Created dynamically (e.g., `pde-data-20231001120000-analytics`).
+- Created dynamically (e.g., `pde-data-20250221113000-analytics`).
 - Contains CSV files like `NodeDetails.csv`, `WLMConfig.csv`.
 
 ---
@@ -46,7 +43,7 @@ Executes checks and exports results:
 ### Step 1: User Input
 Run the script and provide cluster credentials:
 ```bash
-$ python healthcheck.py
+$ python3 extract.py
 
 Cluster Host: my-cluster.123456.us-west-2.redshift.amazonaws.com
 Database Name: analytics
@@ -124,7 +121,7 @@ pip install redshift-connector csv json os getpass
 
 ### 3. Run the Script
 ```bash
-python healthcheck.py
+python3 extract.py
 ```
 
 ---
@@ -146,6 +143,39 @@ python healthcheck.py
 
 5. **Verification**:
    - Next run’s `NodeDetails.csv` shows storage reduced to 50%.
+
+---
+
+## How AWS Will Use This Data
+1. **You run `extract.py`** during off-peak hours.
+2. **It collects performance data** and stores it in CSV files.
+3. **You zip the folder** and send it to AWS.
+4. **AWS analyzes the CSV files** to detect inefficiencies.
+5. **They provide recommendations** based on detected issues.
+
+---
+
+## How to Improve This System
+
+1. **Enhance Security**
+   - Use **environment variables** for credentials instead of prompts.
+   - Implement **IAM authentication** instead of database credentials.
+
+2. **Add Logging & Error Handling**
+   - Implement **structured logging** (`logging` module) instead of `print()`.
+   - Capture detailed error messages for debugging.
+
+3. **Parallel Execution for Faster Query Processing**
+   - Use Python’s **ThreadPoolExecutor** or **asyncio** to run queries in parallel.
+
+4. **Integrate Cloud Storage**
+   - Instead of manual zipping, automatically **upload CSVs to an S3 bucket**.
+
+5. **Automate Scheduling**
+   - Deploy as an **AWS Lambda function** or **cron job** to run periodically.
+
+6. **Web Dashboard for Visualization**
+   - Store results in a **database** and build a **dashboard using Streamlit or Grafana**.
 
 ---
 
@@ -174,7 +204,7 @@ python healthcheck.py
 
 ## Output Structure
 ```
-pde-data-20231001120000-analytics/
+pde-data-20250221113000-analytics/
 ├── NodeDetails.csv
 ├── WLMConfig.csv
 └── QueryPerformance.csv
@@ -187,4 +217,4 @@ This system transforms Redshift administration from reactive to proactive:
 - **Prevent Downtime**: Catch storage/performance issues early.
 - **Optimize Costs**: Right-size clusters based on data.
 - **Simplify Audits**: Historical CSV files provide a compliance trail.
-```
+
